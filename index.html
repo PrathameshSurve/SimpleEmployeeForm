@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Sample Form</title>
+    <style>
+      body {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        background-color: #f5f5f5;
+        margin: 0;
+        padding: 20px;
+        color: #333;
+      }
+      
+      .page-container {
+        max-width: 1000px;
+        margin: 0 auto;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 30px;
+      }
+      
+      .form-container, .table-container {
+        background-color: white;
+        border-radius: 8px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        padding: 25px;
+        flex: 1;
+        min-width: 300px;
+      }
+      
+      .form-container {
+        background-color: #f9f9f9;
+      }
+      
+      .field {
+        margin-bottom: 20px;
+      }
+      
+      label {
+        display: block;
+        margin-bottom: 8px;
+        font-weight: 600;
+        color: #555;
+      }
+      
+      input[type="text"], input[type="number"] {
+        width: 100%;
+        padding: 10px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        font-size: 16px;
+        box-sizing: border-box;
+        transition: border-color 0.3s;
+      }
+      
+      input[type="text"]:focus, input[type="number"]:focus {
+        border-color: #4CAF50;
+        outline: none;
+        box-shadow: 0 0 5px rgba(76, 175, 80, 0.3);
+      }
+      
+      /* Hide number input arrows */
+      input[type="number"]::-webkit-outer-spin-button,
+      input[type="number"]::-webkit-inner-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+      }
+      input[type="number"] {
+        -moz-appearance: textfield;
+      }
+      
+      #submitBtn {
+        background-color: #4CAF50;
+        color: white;
+        border: none;
+        padding: 12px 20px;
+        font-size: 16px;
+        border-radius: 4px;
+        cursor: pointer;
+        transition: background-color 0.3s;
+        width: 100%;
+      }
+      
+      #submitBtn:hover {
+        background-color: #45a049;
+      }
+      
+      #submitBtn:disabled {
+        background-color: #cccccc;
+        cursor: not-allowed;
+      }
+      
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 10px;
+      }
+      
+      th, td {
+        padding: 12px 15px;
+        text-align: left;
+        border-bottom: 1px solid #ddd;
+      }
+      
+      th {
+        background-color: #4CAF50;
+        color: white;
+        font-weight: 600;
+      }
+      
+      tr:nth-child(even) {
+        background-color: #f9f9f9;
+      }
+      
+      tr:hover {
+        background-color: #f1f1f1;
+      }
+      
+      .button-container {
+        margin-top: 25px;
+      }
+      
+      h1 {
+        color: #4CAF50;
+        text-align: center;
+        margin-bottom: 30px;
+      }
+      
+      .error {
+        color: #d9534f;
+        font-size: 14px;
+        margin-top: 5px;
+      }
+      
+      .error-border {
+        border-color: #d9534f !important;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- structure -->
+    <div class="page-container">
+      <div class="form-container">
+        <h1>Employee Form</h1>
+        <form id="empForm">
+          <div class="field">
+            <label for="name">Name<span style="color: red;"> *</span></label>
+            <input type="text" value="" id="name" placeholder="Enter employee name" required/>
+            <div id="nameError" class="error"></div>
+          </div>
+          <div class="field">
+            <label for="age">Age<span style="color: red;"> *</span></label>
+            <input type="number" value="" id="age" placeholder="Enter employee age" required 
+                   onkeydown="return event.keyCode !== 69 && event.keyCode !== 187 && event.keyCode !== 189"/>
+            <div id="ageError" class="error"></div>
+          </div>
+          <div class="field">
+            <label for="remarks">Remarks</label>
+            <input type="text" value="" id="remarks" placeholder="Any remarks"/>
+          </div>
+          <div class="button-container">
+            <button type="button" id="submitBtn">Submit</button>
+          </div>
+        </form>
+      </div>
+      <div class="table-container">
+        <h1>Employee Data</h1>
+        <table border="0">
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Age</th>
+              <th>Remarks</th>
+            </tr>
+          </thead>
+          <tbody id="tableBody">
+            <!-- <Content will be filled automatically with form submissions> -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Script -->
+    <script>
+      let userData = [];
+
+      // Validate form on submit
+      document.getElementById("submitBtn").addEventListener("click", function () {
+          const nameInput = document.getElementById("name");
+          const ageInput = document.getElementById("age");
+          let isValid = true;
+
+          // Reset errors
+          document.getElementById("nameError").textContent = "";
+          document.getElementById("ageError").textContent = "";
+          nameInput.classList.remove("error-border");
+          ageInput.classList.remove("error-border");
+
+          // Validate name
+          if (!nameInput.value.trim()) {
+            document.getElementById("nameError").textContent = "Name is required";
+            nameInput.classList.add("error-border");
+            isValid = false;
+          }
+
+          // Validate age
+          if (!ageInput.value) {
+            document.getElementById("ageError").textContent = "Age is required";
+            ageInput.classList.add("error-border");
+            isValid = false;
+          } else if (ageInput.value <= 0) {
+            document.getElementById("ageError").textContent = "Age must be positive";
+            ageInput.classList.add("error-border");
+            isValid = false;
+          }
+
+          if (isValid) {
+            let nameValue = nameInput.value;
+            let ageValue = ageInput.value;
+            let remarksValue = document.getElementById("remarks").value;
+
+            let record = {
+              name: nameValue,
+              age: ageValue,
+              remarks: remarksValue
+            }
+
+            userData.push(record);
+            updateTable();
+            document.getElementById("empForm").reset();
+          }
+        }
+      );
+      
+      // Prevent typing 'e', '+', '-' in age field
+      document.getElementById("age").addEventListener("keypress", function(e) {
+        if (e.key === 'e' || e.key === '+' || e.key === '-' || e.key === '.') {
+          e.preventDefault();
+        }
+      });
+      
+      function updateTable() {
+        const tableBody = document.getElementById("tableBody");
+        tableBody.innerHTML = ""; // Clear existing rows
+        
+        // Add each user to the table
+        userData.forEach(user => {
+          const row = document.createElement("tr");
+          
+          const nameCell = document.createElement("td");
+          nameCell.textContent = user.name;
+          
+          const ageCell = document.createElement("td");
+          ageCell.textContent = user.age;
+          
+          const remarksCell = document.createElement("td");
+          remarksCell.textContent = user.remarks;
+          
+          row.appendChild(nameCell);
+          row.appendChild(ageCell);
+          row.appendChild(remarksCell);
+          
+          tableBody.appendChild(row);
+        });
+      }
+    </script>
+  </body>
+</html>
